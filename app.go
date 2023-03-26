@@ -21,6 +21,14 @@ func main() {
 		v1.GET("/:name/:id", handler.DoRegister)
 	}
 
+	stuG := r.Group("/stu")
+
+	{
+		stuG.POST("/add", handler.AddStu)
+		stuG.GET("/findByName", handler.FindByName)
+		stuG.GET("/list", handler.ListAll)
+	}
+
 	// 静态服务
 	r.StaticFS("/img", http.Dir("./img"))
 	//r.Static("/img", "./img")
