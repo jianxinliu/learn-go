@@ -15,7 +15,7 @@ func AddStu(c *gin.Context) {
 		base.Fail(c, 400, err.Error())
 		return
 	}
-	tx := dao.GetConn().Create(&stu)
+	tx := dao.StuRepo().Create(&stu)
 	base.Success(c, tx.RowsAffected)
 }
 
@@ -26,7 +26,7 @@ func FindByName(c *gin.Context) {
 		return
 	}
 	var stu models.Student
-	tx := dao.GetConn().First(&stu, "name = ?", name)
+	tx := dao.StuRepo().First(&stu, "name = ?", name)
 	if tx.RowsAffected < 1 {
 		base.Fail(c, 200, "[]")
 		return
@@ -36,6 +36,6 @@ func FindByName(c *gin.Context) {
 
 func ListAll(c *gin.Context) {
 	var stuList []models.Student
-	dao.GetConn().Select("name", "age", "addr", "height").Order("age desc").Find(&stuList)
+	dao.StuRepo().Select("name", "age", "addr", "height").Order("age desc").Find(&stuList)
 	base.Success(c, stuList)
 }

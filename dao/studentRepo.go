@@ -1,28 +1,19 @@
 package dao
 
 import (
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"learn-go/base"
 	"learn-go/models"
 )
 
-var conn *gorm.DB
+var dbInited = true
 
-func connect() {
-	if conn == nil {
-		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-		if err != nil {
-			panic(err)
-		}
-		conn = db
-		conn.AutoMigrate(&models.Student{})
+func StuRepo() *gorm.DB {
+	if !dbInited {
 		initDb()
+		dbInited = true
 	}
-}
-
-func GetConn() *gorm.DB {
-	connect()
-	return conn
+	return base.GetConn()
 }
 
 func initDb() {
@@ -58,5 +49,7 @@ func initDb() {
 			Height: 188,
 		},
 	}
+
+	conn := base.GetConn()
 	conn.CreateInBatches(&stuList, 100)
 }
