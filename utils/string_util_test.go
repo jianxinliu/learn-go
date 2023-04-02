@@ -1,8 +1,7 @@
-package learn
+package utils
 
 import (
 	"fmt"
-	"learn-go/utils"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func (name Name) ToString() string {
 }
 
 func TestFormat(t *testing.T) {
-	format := utils.Format("is {}, {}, {}, {}, {}, {}",
+	format := Format("is {}, {}, {}, {}, {}, {}",
 		"sfd", 4, 123.3, Name{23}, []int{12, 3, 4, 5},
 		map[string]string{"a": "as"})
 
