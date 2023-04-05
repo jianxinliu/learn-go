@@ -3,9 +3,73 @@ package learn
 import (
 	"learn-go/utils"
 	"math"
+	"sync"
 	"testing"
 	"time"
 )
+
+func TestLock(t *testing.T) {
+	const num = 4000
+	doLockSequential(num)
+	doLockConcurrentAndWaitAll(num)
+	doLockConcurrentWithoutWaitAll(num)
+}
+
+func doLockSequential(cnt int) {
+	var sharedNum = 0
+	var lock sync.Mutex
+
+	var increase = func() {
+		defer lock.Unlock()
+		sharedNum++
+	}
+
+	for i := 0; i < cnt; i++ {
+		// 相当于同步执行
+		lock.Lock()
+		go increase()
+	}
+	// 最后一个 goroutine 还没结束就打印了，所以会少一个
+	println(sharedNum)
+}
+
+func doLockConcurrentAndWaitAll(cnt int) {
+	var sharedNum = 0
+	var wg sync.WaitGroup
+	var lock sync.Mutex
+
+	var increase = func() {
+		lock.Lock()
+		defer lock.Unlock()
+		sharedNum++
+		wg.Done()
+	}
+
+	for i := 0; i < cnt; i++ {
+		wg.Add(1)
+		go increase()
+	}
+	wg.Wait()
+	println(sharedNum)
+}
+
+func doLockConcurrentWithoutWaitAll(cnt int) {
+	var sharedNum = 0
+	var lock sync.Mutex
+
+	var increase = func() {
+		lock.Lock()
+		defer lock.Unlock()
+		sharedNum++
+	}
+
+	for i := 0; i <= cnt; i++ {
+		go increase()
+	}
+	// 未等待所有 goroutine 执行完成就打印，所以结果会一直变
+	// 当 goroutine 很少的时候，几乎会一直打印 0
+	println(sharedNum)
+}
 
 func TestConcurrence(t *testing.T) {
 	doTest(100_000, 20000)
